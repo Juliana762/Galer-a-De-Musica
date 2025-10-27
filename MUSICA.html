@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="img/music.png" type="image/x-icon">
+    <title>Galería de Sonidos</title>
+    <style>
+        :root {
+            --primary-color: #35c4ec;
+            --secondary-color: #03034f;
+            --accent-color: #1b1a75;
+            --highlight-color: #04044c80;
+            --text-color: #ffffff;
+            --card-bg: rgba(0, 0, 0, 0.05);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: var(--text-color);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(to right, var(--highlight-color), #000000);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.8;
+        }
+        
+        .tab-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .tab {
+            padding: 12px 24px;
+            background: var(--card-bg);
+            border: none;
+            border-radius: 30px;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        
+        .tab:hover {
+            background: var(--accent-color);
+        }
+        
+        .tab.active {
+            background: var(--highlight-color);
+        }
+        
+        .content-section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .content-section.active {
+            display: block;
+        }
+        
+        .artists-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+        
+        .artist-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .artist-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .artist-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        
+        .artist-info {
+            padding: 20px;
+        }
+        
+        .artist-name {
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            color: var(--highlight-color);
+        }
+        
+        .artist-genre {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 15px;
+        }
+        
+        .audio-player {
+            width: 100%;
+            margin: 15px 0;
+            border-radius: 10px;
+        }
+        
+        .dropdown {
+            margin: 15px 0;
+        }
+        
+        .dropdown-btn {
+            width: 100%;
+            padding: 12px 15px;
+            background: var(--accent-color);
+            border: none;
+            border-radius: 8px;
+            color: var(--text-color);
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+        }
+        
+        .dropdown-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 0 0 8px 8px;
+        }
+        
+        .dropdown.active .dropdown-content {
+            max-height: 300px;
+            padding: 15px;
+        }
+        
+        .dropdown-btn::after {
+            content: '▼';
+            font-size: 0.8rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .dropdown.active .dropdown-btn::after {
+            transform: rotate(180deg);
+        }
+        
+        .awards-list, .bio-text {
+            padding-left: 15px;
+        }
+        
+        .awards-list li, .bio-text p {
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @media (max-width: 768px) {
+            .artists-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Galería de Sonidos</h1>
+            <p class="subtitle">Explora la música de mis artistas favoritos</p>
+        </header>
+        
+        <div class="tab-container">
+            <button class="tab active" data-tab="artistas">Artistas</button>
+            <button class="tab" data-tab="informacion">Información</button>
+            <button class="tab" data-tab="premios">Premios</button>
+            <button class="tab" data-tab="biografia">Biografía</button>
+        </div>
+        
+        <!-- Sección Artistas -->
+        <section id="artistas" class="content-section active">
+            <h2 style="text-align: center; margin-bottom: 30px;">Mis Artistas Favoritos</h2>
+            
+            <div class="artists-grid">
+                <!-- Artista 1 - Feid -->
+                <div class="artist-card">
+                    <img src="https://arteymedio.com.do/wp-content/uploads/2023/10/Feid.jpg" alt="Feid" class="artist-image">
+                    <div class="artist-info">
+                        <h3 class="artist-name">Feid</h3>
+                        <p class="artist-genre">Música Urbana</p>
+                        
+                        <audio controls class="audio-player">
+                            <source src="Audios/feid-la-buena-fai.mp3.mp3" type="audio/mp3">
+                            Tu navegador no soporta el elemento de audio.
+                        </audio>
+                        
+                        <div class="dropdown">
+                            <button class="dropdown-btn">Información</button>
+                            <div class="dropdown-content">
+                                <p>Su nombre artístico hace referencia al convencimiento y credibilidad de su talento, el nombre Feid traduce sonoramente FE, fe en Dios y en sí mismo. FEID, así como suena.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Artista 2 - Blessd -->
+                <div class="artist-card">
+                    <img src="https://www.elespectador.com/resizer/Y1I5UzY2CxE8v4RtaIhgIHwqdT0=/920x613/filters:quality(60):format(jpeg)/cloudfront-us-east-1.images.arcpublishing.com/elespectador/RACUTYJ7B5FXBFAWMEXMXUGEW4.png" alt="Blessd" class="artist-image">
+                    <div class="artist-info">
+                        <h3 class="artist-name">Blessd</h3>
+                        <p class="artist-genre">Reggaetón - Trap</p>
+                        
+                        <audio controls class="audio-player">
+                            <source src="Audios/KRIS R ❌ BLESSD - LAS PIPONAS (BLESSD VERSION) 👹 (VIDEO OFICIAL).mp3" type="audio/mp3">
+                            Tu navegador no soporta el elemento de audio.
+                        </audio>
+                        
+                        <div class="dropdown">
+                            <button class="dropdown-btn">Información</button>
+                            <div class="dropdown-content">
+                                <p>Blessd, cuyo nombre real es Stiven Mesa Londoño, es un cantante y compositor colombiano nacido el 27 de enero de 2000 en Itagüí, Antioquia.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Artista 3 - Maluma -->
+                <div class="artist-card">
+                    <img src="https://tse3.mm.bing.net/th/id/OIP.SAKsh1Tv2CtzA8KAcM6lKgHaGG?w=1024&h=844&rs=1&pid=ImgDetMain&o=7&rm=3" alt="Maluma" class="artist-image">
+                    <div class="artist-info">
+                        <h3 class="artist-name">Maluma</h3>
+                        <p class="artist-genre">Reggaetón</p>
+                        
+                        <audio controls class="audio-player">
+                            <source src="Audios/Maluma - Pretextos (Official Audio) ft. Cosculluela.mp3" type="audio/mp3">
+                            Tu navegador no soporta el elemento de audio.
+                        </audio>
+                        
+                        <div class="dropdown">
+                            <button class="dropdown-btn">Información</button>
+                            <div class="dropdown-content">
+                                <p>Maluma, cuyo nombre real es Juan Luis Londoño Arias, nació el 28 de enero de 1994 en Medellín, Colombia, y es un destacado cantante y compositor de música urbana.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Sección Información -->
+        <section id="informacion" class="content-section">
+            <h2 style="text-align: center; margin-bottom: 30px;">Información de los Artistas</h2>
+            
+            <div class="artists-grid">
+                <!-- Información Feid -->
+                <div class="artist-card">
+                    <img src="https://qpwebsite.s3.amazonaws.com/uploads/2024/04/rss-efe8d054b1379684a648473a39c712350d3087d4db2w.jpg" alt="Feid" class="artist-image">
+                    <div class="artist-info">
+                        <h3 class="artist-name">Feid</h3>
+                        
+                        <div class="dropdown">
+                            <button class="dropdown-btn">Detalles</button>
+                            <div class="dropdown-content">
+                                <p><strong>Nombre real:</strong> Salomón Villada Hoyos</p>
+                                <p><strong>Nacimiento:</strong> 19 de agosto de 1992</p>
+                                <p><strong>Origen:</strong> Medellín, Antioquia</p>
+                                <p><strong>Géneros:</strong> Reggaetón, Música Urbana</p>
+                                <p><strong>Actividad:</strong> 2004 - Actualidad</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Información Blessd -->
+                <div class="artist-card">
+                    <img src="https://estaticos.elcolombiano.com/binrepository/780x975/0c0/780d565/none/11101/GALX/358510025-1239261570000604-3990801214919371783-n_43019793_20230810101142.jpg" alt="Blessd" class="artist-image">
+                    <div class="artist-info">
+                        <h3 class="artist-name">Blessd</h3>
+                        
+                        <div class="dropdown">
+                            <button class="dropdown-btn">Detalles</button>
+                            <div class="dropdown-content">
+                                <p><strong>Nombre real:</strong> Stiven Mesa Londoño</p>
+                                <p><strong>Nacimiento:</strong> 27 de enero de 2000</p>
+                                <p><strong>Origen:</strong> Medellín, Antioquia</p>
+                                <p><strong>Géneros:</strong> Reggaetón</p>
+                                <p><strong>Actividad:</strong> 2019 - Actualidad</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Información Maluma -->
+                <div class="artist-card">
+                    <img src="https://vidaprimo.com/images/artists/0/212/592f4f4dd64ba.jpg" alt="Maluma" class="artist-image">
+                    <div class="artist-info">
+                        <h3 class="artist-name">Maluma</h3>
+                        
+                        <div class="dropdown">
+                            <button class="dropdown-btn">Detalles</button>
+                            <div class="dropdown-content">
+                                <p><strong>Nombre real:</strong> Juan Luis Londoño Arias</p>
+                                <p><strong>Nacimiento:</strong> 28 de enero de 1994</p>
+                                <p><strong>Origen:</strong> Medellín, Antioquia</p>
+                                <p><strong>Géneros:</strong> Reggaetón, Trap Latino, Urbano</p>
+                                <p><strong>Actividad:</strong> 2010 - Actualidad</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Sección Premios -->
+        <section id="premios" class="content-section">
+            <h2 style="text-align: center; margin-bottom: 30px;">Premios y Reconocimientos</h2>
+            
+            <div class="artists-grid">
+                <!-- Premios Feid -->
+                <div class="artist-card">
+                    <img src="https://tse1.mm.bing.net/th/id/OIP.1SLBSPrp4541NFtSf4peJgHaEV?w=1024&h=600&rs=1&pid=ImgDetMain&o=7&rm=3" alt="Feid" class="artist-image">
+                    <div class="artist-info">
+                        <h3 class="artist-name">Feid</h3>
+                        
+                        <div class="dropdown">
+                            <button class="dropdown-btn">Premios Destacados</button>
+                            <div class="dropdown-content">
+                                <ul class="awards-list">
+                                    <li>2023: Mejor Álbum de Música Urbana</li>
+                                    <li>2023: Mejor Artista - Urbano</li>
+                                    <li>2024: Artista Crossover del Año (Recién ganado)</li>
+                                    <li>2023: Productor del Año</li>
+                                    <li>2022: Mejor Artista Urbano</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Premios Blessd -->
+                <div class="artist-card">
+                    <img src="https://files.lamega.com.rcnra-dev.com/assets/public/styles/d_img_1200x630/public/media/image/image/2022-12/Blessd.png?h=55f842e9&itok=gj0AkuD1" alt="Blessd" class="artist-image">
+                    <div class="artist-info">
+                        <h3 class="artist-name">Blessd</h3>
+                        
+                        <div class="dropdown">
+                            <button class="dropdown-btn">Premios Destacados</button>
+                            <div class="dropdown-content">
+                                <ul class="awards-list">
+                                    <li>2022: Artista Revelación</li>
+                                    <li>2022: Mejor Artista o Grupo Trap</li>
+                                    <li>2023: Mejor Artista o Grupo Trap</li>
+                                    <li>2022: Mejor Artista Nuevo - Centro</li>
+                                    <li>2023: Nominado a "Mejor Artista Urbano"</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Premios Maluma -->
+                <div class="artist-card">
+                    <img src="https://national-report.com/wp-content/uploads/2020/08/maluma-first.jpg" alt="Maluma" class="artist-image">
+                    <div class="artist-info">
+                        <h3 class="artist-name">Maluma</h3>
+                        
+                        <div class="dropdown">
+                            <button class="dropdown-btn">Premios Destacados</button>
+                            <div class="dropdown-content">
+                                <ul class="awards-list">
+                                    <li>2021: Mejor Álbum de Música Urbana</li>
+                                    <li>2023: Mejor Álbum de Música Urbana por Don Juan</li>
+                                    <li>2018: Artista del Año, Redes Sociales</li>
+                                    <li>2021: Canción Latina del Año, Airplay por "Hawái"</li>
+                                    <li>2021: Artista Masculino del Año - Urbano</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Sección Biografía -->
+        <section id="biografia" class="content-section">
+            <h2 style="text-align: center; margin-bottom: 30px;">Biografía de los Artistas</h2>
+            
+            <div class="artists-grid">
+                <!-- Biografía Feid -->
+                <div class="artist-card">
+                    <img src="https://cdn.colombia.com/sdi/2023/06/26/feid-conozca-a-la-familia-del-cantante-su-hermana-es-su-mano-derecha-y-se-ha-robado-toda-la-atencion-1162068-1.jpg" alt="Feid" class="artist-image">
+                    <div class="artist-info">
+                        <h3 class="artist-name">Feid</h3>
+                        
+                        <div class="dropdown">
+                            <button class="dropdown-btn">Biografía</button>
+                            <div class="dropdown-content">
+                                <div class="bio-text">
+                                    <p>Salomón Villada Hoyos, mejor conocido como Feid o Ferxxo, es un cantante, compositor y productor musical colombiano. Nació en Medellín, Colombia, el 19 de agosto de 1992. Se caracteriza por usar siempre lentes y vestirse de color verde, marcando un estilo entre sus fanes.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Biografía Blessd -->
+                <div class="artist-card">
+                    <img src="https://tse2.mm.bing.net/th/id/OIP.wLDAffARjEosq1ZL62Pi3AHaHa?rs=1&pid=ImgDetMain&o=7&rm=3" alt="Blessd" class="artist-image">
+                    <div class="artist-info">
+                        <h3 class="artist-name">Blessd</h3>
+                        
+                        <div class="dropdown">
+                            <button class="dropdown-btn">Biografía</button>
+                            <div class="dropdown-content">
+                                <div class="bio-text">
+                                    <p>Blessd (Stiven Mesa Londoño) es un cantante de Medellín nacido en 2000. Saltó a la fama con "Qué Maldición" y se ha consolidado como promesa del reggaetón con éxitos como "Imposible".</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Biografía Maluma -->
+                <div class="artist-card">
+                    <img src="https://tse3.mm.bing.net/th/id/OIP.LzXiiR_tJoQ7ggYY-jDDkQHaEK?rs=1&pid=ImgDetMain&o=7&rm=3" alt="Maluma" class="artist-image">
+                    <div class="artist-info">
+                        <h3 class="artist-name">Maluma</h3>
+                        
+                        <div class="dropdown">
+                            <button class="dropdown-btn">Biografía</button>
+                            <div class="dropdown-content">
+                                <div class="bio-text">
+                                    <p>Maluma (Juan Luis Londoño) es un cantante colombiano nacido en 1994. Desde 2010 se ha convertido en uno de los artistas latinos más exitosos con temas como "Felices los 4" y "Hawái", colaborando con Shakira y Madonna.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <footer>
+            <p>Galería de Sonidos - Mis Artistas Favoritos © 2023</p>
+        </footer>
+    </div>
+
+    <script>
+        // Funcionalidad de las pestañas
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remover clase active de todas las pestañas
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                // Añadir clase active a la pestaña clickeada
+                tab.classList.add('active');
+                
+                // Ocultar todas las secciones de contenido
+                document.querySelectorAll('.content-section').forEach(section => {
+                    section.classList.remove('active');
+                });
+                
+                // Mostrar la sección correspondiente
+                const tabId = tab.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+        
+        // Funcionalidad de los menús desplegables
+        document.querySelectorAll('.dropdown-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                const dropdown = button.parentElement;
+                dropdown.classList.toggle('active');
+            });
+        });
+    </script>
+</body>
+</html>
