@@ -1,0 +1,17 @@
+[33mcommit cb1ed8215ecaa79250266effe6d37c5731ebd25c[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m
+Author: Juliana Pulgarin Higuita <pulgarinjuliana40@gmail.com>
+Date:   Sun Oct 26 20:19:08 2025 -0500
+
+    Configurar Git LFS para archivos de música
+
+[33mcommit 20951a7a52d64d99722936facb3aeaa94f634f42[m
+Author: Juliana Pulgarin Higuita <pulgarinjuliana40@gmail.com>
+Date:   Sun Oct 26 19:33:49 2025 -0500
+
+    🎵 Feat: Galería de Sonidos con artistas urbanos
+    
+    - Página web interactiva de música
+    - Artistas: Feid, Blessd, Maluma
+    - Reproductores de audio integrados
+    - Diseño responsive con pestañas
+    - Secciones: información, premios, biografía
